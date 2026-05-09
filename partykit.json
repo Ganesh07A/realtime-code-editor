@@ -1,0 +1,5 @@
+{
+  "name": "realtime-code-editor",
+  "main": "party/index.ts",
+  "serve": "public"
+}
