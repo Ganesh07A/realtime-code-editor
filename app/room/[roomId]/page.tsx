@@ -14,19 +14,9 @@ function NamePromptModal() {
   const name = searchParams.get("name");
   
   const [inputName, setInputName] = useState("");
-  const [show, setShow] = useState(false);
+  const isMissingName = !name || name === "Anonymous";
 
-  useEffect(() => {
-    // Show modal if name is missing OR if it's the default "Anonymous" from landing page
-    // (User requested it asks for name)
-    if (!name || name === "Anonymous") {
-      setShow(true);
-    } else {
-      setShow(false);
-    }
-  }, [name]);
-
-  if (!show) return null;
+  if (!isMissingName) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,8 +196,8 @@ function ActiveUsers() {
     const updateUsers = () => {
       const states = Array.from(provider.awareness.getStates().values());
       const activeUsers = states
-        .filter((s: Record<string, any>) => s.user)
-        .map((s: Record<string, any>) => s.user as UserPresence);
+        .filter((s: Record<string, unknown>) => s.user)
+        .map((s: Record<string, unknown>) => s.user as UserPresence);
       setUsers(activeUsers);
     };
 
@@ -277,7 +267,7 @@ function AIPanel() {
             <span className="text-xs font-semibold text-slate-700">Synthetix AI</span>
           </div>
           <p className="text-sm text-slate-600 leading-relaxed">
-            I'm ready to review your code. Click the "Review Code" button below when you want me to analyze the current document for bugs, performance, or style issues.
+            I&apos;m ready to review your code. Click the &quot;Review Code&quot; button below when you want me to analyze the current document for bugs, performance, or style issues.
           </p>
         </div>
       </div>

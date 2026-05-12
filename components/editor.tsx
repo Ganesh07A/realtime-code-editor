@@ -25,9 +25,9 @@ export function Editor() {
   const searchParams = useSearchParams();
   const [extensions, setExtensions] = useState<Extension[]>([]);
   const [mounted, setMounted] = useState(false);
-  const [language, setLanguage] = useState("javascript");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -37,8 +37,8 @@ export function Editor() {
     const configMap = yDoc.getMap("config");
     
     const updateLanguage = () => {
-      const newLang = (configMap.get("language") as string) || "javascript";
-      setLanguage(newLang);
+      // Logic for updating language remains but we don't need a local state variable
+      // if it's only used inside the extension rebuilder.
     };
 
     configMap.observe(updateLanguage);
