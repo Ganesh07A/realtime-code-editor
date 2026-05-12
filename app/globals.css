@@ -24,3 +24,45 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Yjs Collaborative Editor Presence */
+.cm-ySelection {
+  opacity: 0.3;
+}
+
+.cm-ySelectionCaret {
+  position: relative;
+  border-left: 2px solid black;
+  margin-left: -1px;
+  margin-right: -1px;
+  z-index: 3;
+}
+
+.cm-ySelectionInfo {
+  position: absolute;
+  top: -1.35em;
+  left: -1px;
+  font-size: 10px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+  padding: 2px 8px;
+  color: white;
+  background-color: inherit;
+  border-radius: 4px 4px 4px 0;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  transition: transform 0.1s ease-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transform: translateY(0);
+}
+
+/* Ensure the label stays visible even when editor loses focus */
+.cm-editor:not(.cm-focused) .cm-ySelectionInfo {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

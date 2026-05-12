@@ -15,7 +15,7 @@ export default class EditorParty implements Party.Server {
       callback: {
         // Called whenever the document changes
         // Use this to trigger AI review
-        handler: async (_yDoc) => {
+        handler: async () => {
           // Document updated — we can hook into this
           console.log(`[Party] Document updated in room: ${this.room.id}`);
         },

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { roomId: Promise<string> } }) {
-  const roomId = await params.roomId;
+export async function GET(req: NextRequest, { params }: { params: Promise<{ roomId: string }> }) {
+  const resolvedParams = await params;
+  const roomId = resolvedParams.roomId;
 
   // In our stateless PartyKit architecture, we don't track rooms locally.
   // When a user connects to a PartyKit room ID, the room is created dynamically.
