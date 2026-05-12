@@ -4,23 +4,45 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { java } from "@codemirror/lang-java";
+import { cpp } from "@codemirror/lang-cpp";
 import { useRoom } from "./room-provider";
 import { yCollab } from "y-codemirror.next";
 import * as Y from "yjs";
 
+import { Extension } from "@codemirror/state";
+
+const languageExtensions: Record<string, Extension> = {
+  javascript: javascript({ jsx: true, typescript: true }),
+  python: python(),
+  java: java(),
+  cpp: cpp(),
+};
+
 export function Editor() {
   const { provider, doc: yDoc } = useRoom();
   const searchParams = useSearchParams();
-  const [extensions, setExtensions] = useState<any[]>([]);
+  const [extensions, setExtensions] = useState<Extension[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [language, setLanguage] = useState("javascript");
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
   useEffect(() => {
     if (!provider || !yDoc) return;
+
+    const configMap = yDoc.getMap("config");
+    
+    const updateLanguage = () => {
+      const newLang = (configMap.get("language") as string) || "javascript";
+      setLanguage(newLang);
+    };
+
+    configMap.observe(updateLanguage);
+    updateLanguage();
 
     const ytext = yDoc.getText("codemirror");
     const undoManager = new Y.UndoManager(ytext);
@@ -36,13 +58,23 @@ export function Editor() {
 
     const collabExtension = yCollab(ytext, provider.awareness, { undoManager });
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setExtensions([
-      javascript({ jsx: true, typescript: true }),
-      collabExtension
-    ]);
+    // Use a function to rebuild extensions when language changes
+    const rebuildExtensions = () => {
+      const currentLang = (configMap.get("language") as string) || "javascript";
+      setExtensions([
+        languageExtensions[currentLang] || languageExtensions.javascript,
+        collabExtension
+      ]);
+    };
 
-  }, [provider, yDoc]);
+    configMap.observe(rebuildExtensions);
+    rebuildExtensions();
+
+    return () => {
+      configMap.unobserve(updateLanguage);
+      configMap.unobserve(rebuildExtensions);
+    };
+  }, [provider, yDoc, searchParams]);
 
   if (!mounted) return null;
 
