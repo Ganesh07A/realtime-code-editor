@@ -24,7 +24,6 @@ function NamePromptModal() {
       const params = new URLSearchParams(searchParams.toString());
       params.set("name", inputName.trim());
       router.replace(`${pathname}?${params.toString()}`);
-      setShow(false);
     }
   };
 
