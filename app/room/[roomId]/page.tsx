@@ -105,7 +105,7 @@ function TopBar({ roomId }: { roomId: string }) {
   };
 
   return (
-    <header className="h-12 border-b border-slate-200 bg-white flex items-center justify-between px-4 shrink-0">
+    <header className="h-12 border-b border-slate-200 bg-white flex items-center justify-between px-4 shrink-0 shadow-sm relative z-10">
       <div className="flex items-center gap-4 flex-1">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center">
@@ -118,7 +118,7 @@ function TopBar({ roomId }: { roomId: string }) {
         </Link>
         <div className="w-px h-4 bg-slate-200 hidden md:block"></div>
         
-        <div className="flex items-center gap-2 group max-w-xs overflow-hidden">
+        <div className="flex items-center gap-2 group max-w-[120px] sm:max-w-xs overflow-hidden">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 shrink-0">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -137,7 +137,7 @@ function TopBar({ roomId }: { roomId: string }) {
         <select 
           value={language}
           onChange={(e) => handleLanguageChange(e.target.value)}
-          className="text-xs font-semibold text-slate-500 uppercase tracking-tight bg-slate-50 border border-slate-200 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
+          className="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-tight bg-slate-50 border border-slate-200 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer"
         >
           <option value="javascript">Javascript</option>
           <option value="python">Python</option>
@@ -146,14 +146,14 @@ function TopBar({ roomId }: { roomId: string }) {
         </select>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 text-xs font-medium px-2 py-1 bg-slate-50 border border-slate-200 rounded-md whitespace-nowrap">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="hidden sm:flex items-center gap-2 text-xs font-medium px-2 py-1 bg-slate-50 border border-slate-200 rounded-md whitespace-nowrap">
           <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
           <span className="text-slate-600 hidden sm:block">{connected ? 'Connected' : 'Connecting...'}</span>
         </div>
         <button 
           onClick={handleShare}
-          className="h-8 px-3 text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
+          className="h-8 px-2 sm:px-3 text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-md transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             {copied ? (
@@ -166,9 +166,9 @@ function TopBar({ roomId }: { roomId: string }) {
               </>
             )}
           </svg>
-          {copied ? "Copied!" : "Share"}
+          <span className="hidden sm:inline">{copied ? "Copied!" : "Share"}</span>
         </button>
-        <button className="h-8 px-4 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+        <button className="h-8 px-3 sm:px-4 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
           </svg>
@@ -209,32 +209,34 @@ function ActiveUsers() {
   }, [provider]);
 
   return (
-    <div className="w-16 lg:w-48 shrink-0 bg-[#f8f9ff] border-r border-slate-200 flex flex-col items-center lg:items-stretch py-4 overflow-y-auto">
-      <div className="px-4 mb-4 hidden lg:block text-xs font-semibold text-slate-500 uppercase tracking-wider">
-        Collaborators
+    <div className="w-16 lg:w-56 shrink-0 bg-[#f8f9ff] border-r border-slate-200 flex flex-col items-center lg:items-stretch py-4 overflow-y-auto h-full shadow-2xl lg:shadow-none">
+      <div className="px-4 mb-4 hidden lg:block text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
+        Collaborators ({users.length})
       </div>
-      <div className="flex flex-col gap-2 px-2 lg:px-3">
+      <div className="flex flex-col gap-2 px-2 lg:px-3 w-full">
         {users.map((user, i) => (
-          <div key={`${user.name}-${i}`} className="flex items-center gap-3 p-1.5 lg:p-2 rounded-lg hover:bg-slate-100/50 cursor-pointer transition-colors group relative" title={user.name}>
+          <div key={`${user.name}-${i}`} className="flex items-center gap-3 p-1.5 lg:p-2.5 rounded-xl hover:bg-white hover:shadow-sm cursor-pointer transition-all group relative" title={user.name}>
             <div 
-              className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm ring-2 ring-white"
+              className="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white/50"
               style={{ backgroundColor: user.color || '#0058bc' }}
             >
               {user.name ? user.name.charAt(0).toUpperCase() : '?'}
             </div>
-            <div className="hidden lg:block overflow-hidden">
-              <div className="text-sm font-medium text-slate-700 truncate">{user.name || 'Anonymous'}</div>
-              <div className="text-xs text-slate-400 flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Online
+            <div className="hidden lg:block overflow-hidden flex-1">
+              <div className="text-sm font-semibold text-slate-700 truncate">{user.name || 'Anonymous'}</div>
+              <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div> Online
               </div>
             </div>
-            <div className="lg:hidden absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+            <div className="lg:hidden absolute left-full ml-2 px-2.5 py-1.5 bg-slate-900 text-white text-[10px] font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none shadow-xl z-50 transform translate-x-1 group-hover:translate-x-0 transition-all">
               {user.name || 'Anonymous'}
             </div>
           </div>
         ))}
         {users.length === 0 && (
-          <div className="px-4 text-xs text-slate-400 hidden lg:block">Waiting...</div>
+          <div className="px-4 py-8 text-center text-xs text-slate-400 hidden lg:block italic">
+            Connecting to peers...
+          </div>
         )}
       </div>
     </div>
@@ -242,8 +244,59 @@ function ActiveUsers() {
 }
 
 function AIPanel() {
+  const { doc: yDoc } = useRoom();
+  const [review, setReview] = useState<string>("");
+  const [isReviewing, setIsReviewing] = useState(false);
+
+  useEffect(() => {
+    if (!yDoc) return;
+    const aiMap = yDoc.getMap("ai");
+    
+    const updateAI = () => {
+      setReview((aiMap.get("review") as string) || "");
+      setIsReviewing(!!aiMap.get("isReviewing"));
+    };
+
+    aiMap.observe(updateAI);
+    updateAI();
+
+    return () => aiMap.unobserve(updateAI);
+  }, [yDoc]);
+
+  const handleReview = async () => {
+    if (!yDoc || isReviewing) return;
+    
+    const aiMap = yDoc.getMap("ai");
+    const configMap = yDoc.getMap("config");
+    const code = yDoc.getText("codemirror").toString();
+    const language = (configMap.get("language") as string) || "javascript";
+    const filename = (configMap.get("filename") as string) || "main-app.ts";
+
+    aiMap.set("isReviewing", true);
+    aiMap.set("review", "");
+
+    try {
+      const response = await fetch("/api/ai/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, language, filename }),
+      });
+
+      const data = await response.json();
+      if (data.result) {
+        aiMap.set("review", data.result);
+      } else {
+        aiMap.set("review", "Error: " + (data.error || "Failed to generate review"));
+      }
+    } catch (_err) {
+      aiMap.set("review", "Error: Connection failed.");
+    } finally {
+      aiMap.set("isReviewing", false);
+    }
+  };
+
   return (
-    <div className="hidden lg:flex flex-col w-80 shrink-0 bg-[#f8f9ff] border-l border-slate-200">
+    <div className="flex flex-col w-72 sm:w-80 shrink-0 bg-[#f8f9ff] border-l border-slate-200 h-full shadow-2xl lg:shadow-none">
       <div className="h-12 border-b border-slate-200 px-4 flex items-center justify-between bg-white/50 shrink-0">
         <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
@@ -256,28 +309,69 @@ function AIPanel() {
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="bg-white border border-slate-200 p-3 rounded-lg shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-5 h-5 rounded-sm bg-blue-100 flex items-center justify-center">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
-                <path d="M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2a2 2 0 0 1-2-2c0-1.1.9-2 2-2Z"></path>
-              </svg>
+        {!review && !isReviewing && (
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                  <path d="M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2a2 2 0 0 1-2-2c0-1.1.9-2 2-2Z"></path>
+                </svg>
+              </div>
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-tight">Synthetix AI</span>
             </div>
-            <span className="text-xs font-semibold text-slate-700">Synthetix AI</span>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              I&apos;m ready to review your code via OpenRouter. Click the &quot;Review Code&quot; button below and I&apos;ll analyze the current document for bugs, performance, and security.
+            </p>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">
-            I&apos;m ready to review your code. Click the &quot;Review Code&quot; button below when you want me to analyze the current document for bugs, performance, or style issues.
-          </p>
-        </div>
+        )}
+
+        {isReviewing && (
+          <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm animate-pulse flex flex-col items-center justify-center text-center">
+            <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+            <p className="text-sm font-medium text-slate-600 italic">AI is analyzing your code...</p>
+          </div>
+        )}
+
+        {review && (
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded bg-emerald-100 flex items-center justify-center">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-800">Latest Review</span>
+              </div>
+              <button onClick={() => { if(yDoc) yDoc.getMap("ai").set("review", "") }} className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase transition-colors">Clear</button>
+            </div>
+            <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap font-sans text-sm leading-relaxed">
+              {review}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="p-4 bg-white border-t border-slate-200 shrink-0">
-        <button className="w-full bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium py-2.5 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="m9 12 2 2 4-4"></path>
-          </svg>
-          Review Code
+        <button 
+          onClick={handleReview}
+          disabled={isReviewing}
+          className={`w-full text-white text-sm font-semibold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-[0.98] ${isReviewing ? 'bg-slate-400 cursor-not-allowed shadow-none' : 'bg-slate-900 hover:bg-slate-800 hover:shadow-slate-500/25'}`}
+        >
+          {isReviewing ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+              Review Code
+            </>
+          )}
         </button>
       </div>
     </div>
@@ -286,18 +380,55 @@ function AIPanel() {
 
 export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const resolvedParams = use(params);
+  const [showMobileAI, setShowMobileAI] = useState(false);
+  const [showMobileUsers, setShowMobileUsers] = useState(false);
   
   return (
     <RoomProvider room={resolvedParams.roomId}>
       <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-white text-slate-400 italic">Synchronizing...</div>}>
         <div className="flex flex-col h-screen w-full bg-white overflow-hidden text-slate-900 font-sans selection:bg-blue-100">
           <TopBar roomId={resolvedParams.roomId} />
-          <div className="flex flex-1 overflow-hidden">
-            <ActiveUsers />
+          
+          {/* Mobile Navigation Toggles */}
+          <div className="lg:hidden flex items-center justify-between px-4 py-2 border-b border-slate-100 bg-slate-50/50 shrink-0">
+            <button 
+              onClick={() => setShowMobileUsers(!showMobileUsers)}
+              className={`text-[10px] font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${showMobileUsers ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25' : 'bg-white border-slate-200 text-slate-600'}`}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+              </svg>
+              Collaborators
+            </button>
+            <button 
+              onClick={() => setShowMobileAI(!showMobileAI)}
+              className={`text-[10px] font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 ${showMobileAI ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25' : 'bg-white border-slate-200 text-slate-600'}`}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+              AI Assistant
+            </button>
+          </div>
+
+          <div className="flex flex-1 overflow-hidden relative">
+            {/* Collaborators List - Sidebar */}
+            <div className={`${showMobileUsers ? 'flex' : 'hidden'} lg:flex absolute inset-y-0 left-0 z-40 lg:relative h-full`}>
+              <ActiveUsers />
+              {showMobileUsers && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm lg:hidden -z-10" onClick={() => setShowMobileUsers(false)}></div>}
+            </div>
+
             <main className="flex-1 relative flex flex-col bg-white">
               <Editor />
             </main>
-            <AIPanel />
+
+            {/* AI Assistant - Sidebar */}
+            <div className={`${showMobileAI ? 'flex' : 'hidden'} lg:flex absolute inset-y-0 right-0 z-40 lg:relative h-full`}>
+              <AIPanel />
+              {showMobileAI && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm lg:hidden -z-10" onClick={() => setShowMobileAI(false)}></div>}
+            </div>
           </div>
           <NamePromptModal />
         </div>

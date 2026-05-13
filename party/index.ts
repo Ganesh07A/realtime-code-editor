@@ -24,14 +24,16 @@ export default class EditorParty implements Party.Server {
   }
 
   // Called when a WebSocket message comes in (non-Yjs messages)
-  onMessage(message: string, sender: Party.Connection) {
-    // We can use this channel for custom messages
-    // like broadcasting AI reviews to all users
-    const parsed = JSON.parse(message);
+  onMessage(message: string | ArrayBuffer, sender: Party.Connection) {
+    if (typeof message !== "string") return;
 
-    if (parsed.type === "ai-review") {
-      // Broadcast AI review to all clients in this room
-      this.room.broadcast(message, [sender.id]);
+    try {
+      const parsed = JSON.parse(message);
+      if (parsed.type === "ai-review") {
+        this.room.broadcast(message, [sender.id]);
+      }
+    } catch (_err) {
+      // Ignore messages that aren't JSON
     }
   }
 }
