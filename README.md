@@ -49,22 +49,47 @@ Users can:
 
 ---
 
+# 💡 Why We Built This
+
+Modern development teams collaborate remotely more than ever, but existing tools are often fragmented, complex, or not optimized for real-time coding workflows.
+
+We wanted to build a lightweight, scalable, and intelligent collaborative coding platform focused on synchronization, developer experience, and seamless teamwork.
+
+---
+
 # 🔥 Features
 
 - ⚡ Real-time collaborative editing
+- ⚡ Low latency realtime synchronization
 - 👥 Multi-user support
-- 🧠 AI-powered code suggestions
+- 🧠 AI-powered code quality suggestions
 - 🖱️ Live cursor tracking
 - 🔌 PartyKit + WebSocket communication
 - 🧠 OT/CRDT-based conflict resolution
 - 🎨 Syntax highlighting
 - 🖥️ Modern IDE-style UI
 - 📁 Sidebar and editor layout
-- 🌙 Clean dark theme
+- 🌙 Clean light theme
 - 📱 Responsive design
 
 ---
 
+# 🎥 Demo
+<img width="1140" height="518" alt="Untitled design" src="https://github.com/user-attachments/assets/e56ea81e-6913-4739-99fe-b6cbc6e5cb02" />
+
+---
+
+# 📸 Screenshots
+## Landing Page
+<img width="1613" height="859" alt="Screenshot 2026-05-14 215528" src="https://github.com/user-attachments/assets/e3bb094a-666b-47cb-a215-7f3760a37fbe" />
+
+## Collaborative editing
+<img width="1919" height="792" alt="Screenshot 2026-05-14 220017" src="https://github.com/user-attachments/assets/24260e88-ab19-4428-bcba-bd9d0958191d" />
+
+## AI Suggestions
+<img width="1919" height="861" alt="Screenshot 2026-05-14 220221" src="https://github.com/user-attachments/assets/645eca28-3983-436d-a48b-03bda7f5a7ac" />
+
+---
 # 🛠️ Tech Stack
 
 | Technology | Purpose |
@@ -171,12 +196,14 @@ npm run dev
 
 # 📜 License
 
-This project is developed for educational and hackathon purposes.
+Built as a hackathon project focused on scalable collaborative systems and intelligent developer tooling.
 
 ---
 
 <div align="center">
 
-Built with ❤️ by TEAM SHRIVOX
+# 👨‍💻 Team SHRIVOX
+
+Built during the hackathon by passionate developers focused on real-time systems and collaborative developer tools.
 
 </div>
