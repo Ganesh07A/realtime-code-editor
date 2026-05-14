@@ -244,9 +244,11 @@ function ActiveUsers() {
 }
 
 function AIPanel() {
-  const { doc: yDoc } = useRoom();
+  const { doc: yDoc, provider } = useRoom();
   const [review, setReview] = useState<string>("");
   const [isReviewing, setIsReviewing] = useState(false);
+
+  const [isSelectionReview, setIsSelectionReview] = useState(false);
 
   useEffect(() => {
     if (!yDoc) return;
@@ -255,6 +257,7 @@ function AIPanel() {
     const updateAI = () => {
       setReview((aiMap.get("review") as string) || "");
       setIsReviewing(!!aiMap.get("isReviewing"));
+      setIsSelectionReview(!!aiMap.get("isSelection"));
     };
 
     aiMap.observe(updateAI);
@@ -264,7 +267,7 @@ function AIPanel() {
   }, [yDoc]);
 
   const handleReview = async () => {
-    if (!yDoc || isReviewing) return;
+    if (!yDoc || isReviewing || !provider) return;
     
     const aiMap = yDoc.getMap("ai");
     const configMap = yDoc.getMap("config");
@@ -272,14 +275,20 @@ function AIPanel() {
     const language = (configMap.get("language") as string) || "javascript";
     const filename = (configMap.get("filename") as string) || "main-app.ts";
 
+    // Get selection from awareness
+    const selection = (provider.awareness.getLocalState() as { selection?: { text: string; from: number; to: number } })?.selection;
+    const selectedText = selection?.text || "";
+
     aiMap.set("isReviewing", true);
     aiMap.set("review", "");
+    aiMap.set("isSelection", !!selectedText);
+    aiMap.set("selectionRange", (selection && selectedText) ? { from: selection.from, to: selection.to } : null);
 
     try {
       const response = await fetch("/api/ai/review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, language, filename }),
+        body: JSON.stringify({ code, language, filename, selectedText }),
       });
 
       const data = await response.json();
@@ -288,11 +297,49 @@ function AIPanel() {
       } else {
         aiMap.set("review", "Error: " + (data.error || "Failed to generate review"));
       }
-    } catch (_err) {
+    } catch {
       aiMap.set("review", "Error: Connection failed.");
     } finally {
       aiMap.set("isReviewing", false);
     }
+  };
+
+  const handleApplyFix = () => {
+    if (!yDoc || !review) return;
+
+    // Extract the code block from the review
+    // We look for the last code block in the markdown
+    const codeBlockRegex = /```[\w]*\n([\s\S]*?)```/g;
+    const matches = Array.from(review.matchAll(codeBlockRegex));
+    
+    if (matches.length === 0) {
+      alert("No code block found in the AI review to apply.");
+      return;
+    }
+
+    const lastMatch = matches[matches.length - 1];
+    const newCode = lastMatch[1].trim();
+
+    const aiMap = yDoc.getMap("ai");
+    const isSelection = aiMap.get("isSelection");
+    const range = aiMap.get("selectionRange") as { from: number; to: number } | null;
+    const yText = yDoc.getText("codemirror");
+
+    yDoc.transact(() => {
+      if (isSelection && range) {
+        // Surgical replacement
+        yText.delete(range.from, range.to - range.from);
+        yText.insert(range.from, newCode);
+        // Clear selection flag after apply
+        aiMap.set("isSelection", false);
+        aiMap.set("selectionRange", null);
+      } else {
+        // Full file replacement
+        yText.delete(0, yText.length);
+        yText.insert(0, newCode);
+      }
+      aiMap.set("review", ""); // Clear review after applying
+    });
   };
 
   return (
@@ -341,13 +388,27 @@ function AIPanel() {
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
-                <span className="text-xs font-bold text-slate-800">Latest Review</span>
+                <span className="text-xs font-bold text-slate-800">{isSelectionReview ? 'Snippet Fix' : 'Latest Review'}</span>
               </div>
-              <button onClick={() => { if(yDoc) yDoc.getMap("ai").set("review", "") }} className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase transition-colors">Clear</button>
+              <button onClick={() => { if(yDoc) {
+                const aiMap = yDoc.getMap("ai");
+                aiMap.set("review", "");
+                aiMap.set("isSelection", false);
+              }}} className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase transition-colors">Clear</button>
             </div>
-            <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap font-sans text-sm leading-relaxed">
+            <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap font-sans text-sm leading-relaxed mb-4">
               {review}
             </div>
+            
+            <button 
+              onClick={handleApplyFix}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-2 rounded-lg transition-all shadow-md flex items-center justify-center gap-1.5"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              {isSelectionReview ? 'Apply Snippet Fix' : 'Apply Full Fix'}
+            </button>
           </div>
         )}
       </div>
