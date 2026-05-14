@@ -42,7 +42,7 @@ export default function LandingPage() {
         const parts = finalRoomId.split("/room/");
         finalRoomId = parts[1].split(/[?#]/)[0];
       }
-    } catch (_err) {
+    } catch {
       // Ignore parse errors
     }
 

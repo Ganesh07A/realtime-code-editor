@@ -89,6 +89,23 @@ export function Editor() {
         height="100%"
         theme="light"
         extensions={extensions}
+        onUpdate={(update) => {
+          if (update.selectionSet || update.docChanged) {
+            if (!provider) return;
+            const selection = update.state.selection.main;
+            const text = update.state.doc.sliceString(selection.from, selection.to);
+            
+            // Only update if selection actually changed to avoid infinite loops/flicker
+            const currentState = provider.awareness.getLocalState() as { selection?: { from: number; to: number } };
+            if (currentState?.selection?.from !== selection.from || currentState?.selection?.to !== selection.to) {
+              provider.awareness.setLocalStateField('selection', {
+                from: selection.from,
+                to: selection.to,
+                text: text
+              });
+            }
+          }
+        }}
         className="h-full text-sm font-mono overflow-auto bg-white [&_.cm-editor]:h-full [&_.cm-scroller]:font-mono"
         basicSetup={{
           lineNumbers: true,

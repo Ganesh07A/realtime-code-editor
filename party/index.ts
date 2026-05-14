@@ -32,7 +32,7 @@ export default class EditorParty implements Party.Server {
       if (parsed.type === "ai-review") {
         this.room.broadcast(message, [sender.id]);
       }
-    } catch (_err) {
+    } catch {
       // Ignore messages that aren't JSON
     }
   }

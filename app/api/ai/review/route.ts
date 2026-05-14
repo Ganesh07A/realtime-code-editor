@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { code, language, filename } = await req.json();
+    const { code, language, filename, selectedText } = await req.json();
 
     if (!code) {
       return NextResponse.json({ error: "No code provided for review." }, { status: 400 });
@@ -26,30 +26,60 @@ export async function POST(req: Request) {
       }
     });
 
-    const prompt = `You are a professional code reviewer. Analyze the following ${language} code from the file "${filename}".
-    Check for:
-    1. Logical bugs or errors.
-    2. Performance bottlenecks.
-    3. Security vulnerabilities.
-    4. Code style and readability improvements.
+    const isSelection = !!selectedText && selectedText.length > 0;
     
-    Provide your feedback in a concise, professional Markdown format with clear headings.
-    
-    Code to review:
-    \`\`\`${language}
-    ${code}
-    \`\`\``;
+    let prompt = "";
+    if (isSelection) {
+      prompt = `You are a professional code reviewer. The user has selected a specific snippet of ${language} code in the file "${filename}".
+      
+      SELECTED SNIPPET:
+      \`\`\`${language}
+      ${selectedText}
+      \`\`\`
 
-    // Using Gemini 2.0 Flash via OpenRouter for speed and quality
+      FULL FILE CONTEXT (for reference only):
+      \`\`\`${language}
+      ${code}
+      \`\`\`
+
+      Task:
+      1. Analyze the SELECTED SNIPPET for bugs or improvements.
+      2. Provide a concise explanation of issues.
+      3. Provide a corrected version of ONLY the selected snippet.
+      
+      FORMATTING:
+      End your response with a section titled "REVISED SNIPPET" followed by a code block containing ONLY the corrected snippet.`;
+    } else {
+      prompt = `You are a professional code reviewer. Analyze the following ${language} code from the file "${filename}".
+      
+      Code to review:
+      \`\`\`${language}
+      ${code}
+      \`\`\`
+
+      Task:
+      1. Analyze for bugs, performance, security, and style.
+      2. Provide concise feedback.
+      3. Provide the FULL corrected version of the file.
+      
+      FORMATTING:
+      End your response with a section titled "COMPLETE REVISED CODE" followed by a code block containing the entire corrected file.`;
+    }
+
+    // Using Gemini 1.5 Flash via OpenRouter for better rate-limit stability
     const response = await openai.chat.completions.create({
-      model: "google/gemini-2.0-flash-001", 
+      model: "inclusionai/ring-2.6-1t:free", 
       messages: [
+        {
+          role: "system",
+          content: "You are a world-class code reviewer. Your goal is to help developers write safer, cleaner, and more efficient code."
+        },
         {
           role: "user",
           content: prompt
         }
       ],
-      temperature: 0.7,
+      temperature: 0.3, // Lower temperature for more precise code fixes
     });
 
     return NextResponse.json({ 
